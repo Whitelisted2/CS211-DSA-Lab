@@ -1,134 +1,132 @@
 
+// PROGRAM FOR BREADTH FIRST SEARCH ON AN UNDIRECTED GRAPH
 #include<stdio.h>
 #include<stdlib.h>
-void add_to_ll();
+
 void find_dist();
 void enqueue();
 int dequeue();
 
 int m, n;
 
-struct vertex{
+struct vertex{                 // for vertex of graph
     int data;
-    char color;
-    int dist;
-    int pred;
     struct vertex *next;
 };
-struct vertex *allvert[2000];     // create array of pointers for the multiple linked lists
 
-struct queue{
+struct queue{                  // for queue node
     int data;
     struct queue *next;
 };
-struct queue *head_grey = NULL;
-struct queue *tail = NULL;
+struct queue *head_q = NULL;   // initialize queue head, tail
+struct queue *tail_q = NULL;
 
-struct queue* create(int num)
+struct queue* create(int num)  // create function for enqueueing process
 {
     struct queue *newnode = (struct queue*)malloc(sizeof(struct queue));
     if(newnode == NULL)
     {
         printf("\nInsufficient memory space.");
-        exit(1);
+        exit(6);
     }
     newnode->data = num;
     newnode->next = NULL;
     return newnode;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     FILE *fp;                          // to empty the output file
     fp = fopen("sd.txt","w");
     fclose(fp);
  
-    // if(argc>2)                         // argc contains argument count. Argument count should be 2 for execution to proceed in this case
-    // {                                  // the arguments are stored using pointer array *argv[] 
-    //     printf("too many arguments. enter exactly one file name.");
-    //     exit(1);
-    // }
-    // else if(argc<2)
-    // {
-    //     printf("too few arguments. enter exactly one file name.");
-    //     exit(2);
-    // }
- 
+    if(argc>2)                         // argc contains argument count. Argument count should be 2 for execution to proceed in this case
+    {                                  // the arguments are stored using pointer array *argv[] 
+        printf("too many arguments. enter exactly one file name.");
+        exit(1);
+    }
+    else if(argc<2)
+    {
+        printf("too few arguments. enter exactly one file name.");
+        exit(2);
+    }
+    
     FILE *infile;
-    infile = fopen("input1.graph", "r");
+    infile = fopen(argv[1], "r");
     if(infile == NULL)
     {
         printf("input file does not exist\n");
         exit(3);
     }
     
+    int v1, v2;
     fscanf(infile, "%d %d\n", &n, &m); // n is number of vertices and m is number of edges (number of lines to read in the file after first line)
-    printf("\n 1st : %d  , %d ", n,m);
-    //int i;
-    // for(i=0; i<2000; i++)
-    // {
-    //     allvert[i] = NULL;
-    // }
-    printf("uh");
-    printf("\n Second");
-    //while(1) // every other line has two vertices to connect (undirected)
-   //{
-  //if ( fscanf(infile, "%d %d\n", &v1, &v2) == EOF ) { printf("OOOOOOOOOOOOO"); exit(0); }
-  // add_to_ll(v1, v2); // add v2 to adjacency list of v1
-  // add_to_ll(v2, v1); // add v1 to adjacency list of v2
-  // printf("\n InSide Loop : %d  , %d ", v1,v2);
-  //}
-   printf("llllllllllllllllllllllllllllld ");
-   fclose(infile);
-  printf("llllllllllllllllllllllllllllld is last num");
-    printf("d is last num");
-    // graph should be ready via linked list representation!
-    // we need to find distance of vertices from 0 now
-    //find_dist();
-    printf("hmmm");
-    FILE *out;                          // to empty the output file
-    out = fopen("sd.txt","a+");
-    for(i = 0; i < n; i++)
+    
+    struct vertex *allvert[n];
+    int color[n];
+    int dist[n];
+    for(int i = 0; i < n; i++)
     {
-        fprintf(out, "%d\n", allvert[i]->dist);
+        color[i] = 0;                 // 0 for white, 1 for grey, 2 for black
+        dist[i] = -1;
+        allvert[i] = NULL;
+    } 
+    
+    while(fscanf(infile, "%d %d\n", &v1, &v2) != EOF)
+    {
+        struct vertex *newnode1 = malloc(sizeof(struct vertex));
+        struct vertex *newnode2 = malloc(sizeof(struct vertex));
+        if(newnode1 != NULL && newnode2 != NULL)                   // check if memory is available
+        {
+            newnode1->data = v1;
+            newnode2->data = v2;
+        }
+        else{
+           printf("\nMemory Insufficient!");
+           exit(4);
+        }
+        newnode2->next = allvert[v1];                // append v2 to adjacency list of v1
+        allvert[v1] = newnode2;
+        newnode1->next = allvert[v2];                // and vice versa
+        allvert[v2] = newnode1;
     }
-    fclose(out);
- 
-    return 0;
-}
-
-void find_dist()
-{
-    // we will find distance of all vertices from 0, and put it as information in its "dist" variable
-    allvert[0]->color = 'g';
-    allvert[0]->dist = 0;
-    allvert[0]->pred = -1;
+    fclose(infile);
+    
+    color[0] = 1;                                    // values assuming 0 is source node
+    dist[0] = 0;
     enqueue(0);
     
-    while(head_grey != NULL)
+    while(head_q != NULL)                            // the main part of the BFS Algorithm
     {
-        int u = dequeue();
-        struct vertex *temp;
-        temp = allvert[u];
-        while(temp != NULL)
+        int k = dequeue();                           // dequeue from queue and traverse through that element's adjacency list
+        struct vertex *traversal;
+        traversal = allvert[k];
+        while(traversal != NULL)
         {
-            if(temp->color == 'w')
+            if(color[traversal->data] == 0)          // if a node is unvisited, then now change its color to grey
             {
-                temp->color = 'g';
-                temp->dist = allvert[u]->dist + 1;
-                temp->pred = u;
-                enqueue(u);
+                color[traversal->data] = 1;
+                dist[traversal->data] = dist[k] + 1; // also update its distance to be one greater than that of dequeued element
+                enqueue(traversal->data);            // enqueue the now-grey element into queue
             }
-            temp = temp->next;
+            traversal = traversal->next;
         }
-        allvert[u]->color = 'b';
+        color[k] = 2;                                // once all neighbours of k are visited, change color of k to black
     }
     
+    FILE *outfile;
+    outfile = fopen("sd.txt", "a+");
+    for(int i = 0; i < n; i++)
+    {
+        fprintf(outfile, "%d\n", dist[i]);          // output file contains distances of all nodes from source 
+    }
+    fclose(outfile);
+    return 0;
 }
 
 int dequeue()                        // basically, delete_beg() for a singly linked list
 {
-    if(head_grey == NULL)            // if queue is empty (verification measure, though the stack handling will manage this)
+    if(head_q == NULL)              // if queue is empty (verification measure, though the stack handling will manage this)
     {
         printf("\nUnderflow case. Empty queue.");
         printf("\n this part of the function should ideally never be used in this program!");
@@ -137,53 +135,25 @@ int dequeue()                        // basically, delete_beg() for a singly lin
     else{
         struct queue *del;
         int deldata;
-        del = head_grey;             // set del to head, get its data into a variable, change head, then free del.
+        del = head_q;               // set del to head, get its data into a variable, change head, then free del.
         deldata = del->data;
-        head_grey = head_grey->next;
+        head_q = head_q->next;
         free(del);
-        return deldata;              // return the "dequeued" value.
+        return deldata;             // return the "dequeued" value.
     }
 }
 
-void enqueue(int num)                // basically, insert_end() for a singly linked list
+void enqueue(int num)               // basically, insert_end() for a singly linked list
 {
     struct queue *newnode;
     newnode = create(num);
-    if(head_grey == NULL)            // if queue is empty
+    if(head_q == NULL)              // if queue is empty
     {
-        head_grey = newnode;
-        tail = newnode;
+        head_q = newnode;
+        tail_q = newnode;
     }
     else{
-         tail->next = newnode;       // else, make tail point to new node, change tail
-         tail = newnode;
+         tail_q->next = newnode;    // else, make tail point to new node, change tail
+         tail_q = newnode;
     }
-}
-
-void add_to_ll(int from_vert, int to_vert)
-{
-    // for a moment, think about this as a hash table, since insertion procedure is very similar!!!
-    struct vertex *newnode = malloc(sizeof(struct vertex));
-    if(newnode != NULL)                          // check if memory is available
-    {
-        newnode->data = to_vert;                 // copy to_vert to data of the node
-        newnode->color = 'w';                    // initially all vertices are white
-        newnode->next = NULL;                    // initialise newnode->next to be NULL
-        newnode->pred = -1;
-    }
-    else{
-        printf("\nMemory Insufficient!");
-        exit(4);
-    }
-    struct vertex *head;
-    head = allvert[from_vert];
-    if(head == NULL)                            // "no-collision" case
-    {
-        head = newnode;
-    }
-    else{                                       // "collision case"; insert at beginning of linked list
-        newnode->next = head;
-        head = newnode;
-    }
-    
 }
