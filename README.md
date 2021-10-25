@@ -1,6 +1,7 @@
 # CS211-DSA-Lab
 
-This repository contains C programs related to Data Structures And Algorithms (Autumn 2021)
+This repository contains C programs related to Data Structures And Algorithms (Autumn 2021).
+The relevant sample input/output files have been included in the respective folders.
 
 ## Assignments Included
 0. File Operations
