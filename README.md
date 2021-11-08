@@ -19,6 +19,4 @@ The relevant sample input/output files have been included in the respective fold
 9. MQ2
     - Bellman-Ford Algorithm to find shortest distance (-ve weights included)  
   
-  
-
 > Victory comes from finding opportunities in problems. —Sun Tzu, The Art of War
