@@ -17,6 +17,8 @@ The relevant sample input/output files have been included in the respective fold
     - Stack using Queue (using Singly Linked List, i.e., SLL)
     - Queue using Stack (using Singly Linked List, i.e., SLL)
 9. MQ2
-    - Bellman-Ford Algorithm to find shortest distance (-ve weights included)  
-  
+    - Bellman-Ford Algorithm to find shortest distance (-ve weights included)
+10. EndSem
+    - Dijkstra Algorithm to find shortest distance in a directed graph (only +ve weights)
+
 > Victory comes from finding opportunities in problems. —Sun Tzu, The Art of War
